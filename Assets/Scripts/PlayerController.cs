@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private float powerUpStrength = 10;
     private GameObject focalPoint;
     private bool hasPowerUp = false;
-    private float powerUpTime = 5;
+    private float powerUpTime = 7;
     public GameObject powerUpIndicator;
 
     // Start is called before the first frame update
