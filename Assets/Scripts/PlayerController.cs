@@ -10,7 +10,9 @@ public class PlayerController : MonoBehaviour
     private GameObject focalPoint;
     private bool hasPowerUp = false;
     private float powerUpTime = 7;
+    private float projectileTime = 2;
     public GameObject powerUpIndicator;
+    public GameObject projectile;
 
     // Start is called before the first frame update
     void Start()
@@ -32,9 +34,19 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("PowerUp"))
         {
             powerUpIndicator.SetActive(true);
-            hasPowerUp = true;
             Destroy(other.gameObject);
-            StartCoroutine(PowerupCountdownRoutine());
+
+            if (other.gameObject.name == "PowerUp(Clone)")
+            {
+                hasPowerUp = true;
+                StartCoroutine(PowerupCountdownRoutine());
+                Debug.Log(other.gameObject.name);
+            }
+            else if (other.gameObject.name == "ProjectilePowerUp(Clone)")
+            {
+                StartCoroutine(ProjectileCountdownRoutine());
+                Debug.Log(other.gameObject.name);
+            }
         }
     }
 
@@ -43,6 +55,24 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(powerUpTime);
         hasPowerUp = false;
         powerUpIndicator.SetActive(false);
+    }
+
+    IEnumerator ProjectileCountdownRoutine()
+    {
+        for (int i = 0; i < powerUpTime / projectileTime; i++)
+        {
+            CreateProjectileWave();
+            yield return new WaitForSeconds(projectileTime);
+        }
+        powerUpIndicator.SetActive(false);
+    }
+
+    void CreateProjectileWave()
+    {
+        for (int i = 0; i < FindObjectsOfType<Enemy>().Length; i++)
+        {
+            Instantiate(projectile, transform.position, projectile.transform.rotation);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
