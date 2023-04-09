@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
     public GameObject powerupPrefab;
     private float spawnRange = 9;
     private int enemyCount;
@@ -32,8 +32,12 @@ public class SpawnManager : MonoBehaviour
 
     private void SpawnEnemyWave(int enemiesToSpawn)
     {
+
         for (int i = 0; i < enemiesToSpawn; i++)
-            Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
+        {
+            GameObject randomEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            Instantiate(randomEnemy, GenerateSpawnPosition(), randomEnemy.transform.rotation);
+        }
 
         waveNumber++;
     }
