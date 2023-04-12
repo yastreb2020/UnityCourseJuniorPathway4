@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public float speed = 3;
     private Rigidbody enemyRb;
     private GameObject player;
+    private float projectileForce = 1000;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +31,8 @@ public class Enemy : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Projectile"))
         {
+            // move in the opposite direction from the projectile and then destroy the latter
+            enemyRb.AddForce((transform.position - other.transform.position) * projectileForce);
             Destroy(other.gameObject);
         }
     }

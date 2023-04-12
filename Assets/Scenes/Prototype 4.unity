@@ -157,6 +157,7 @@ MonoBehaviour:
   - {fileID: 7792098841427875490, guid: 090d67450d0c95c46990791881fd48f8, type: 3}
   powerupPrefabs:
   - {fileID: 1789875585373768151, guid: c02528b9c7d61bc4296f881f0d64046d, type: 3}
+  - {fileID: 2800370754192430266, guid: 61f14bea8fb476d499aafb68949e03bd, type: 3}
   waveNumber: 1
 --- !u!4 &34615833
 Transform:
@@ -762,6 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a599dedc0861474dbf8511e05d2ac69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectileTime: 2
   powerUpIndicator: {fileID: 2017561257}
   projectile: {fileID: 1463108099753554555, guid: 5734216ae7c305940b51c9078947bb15, type: 3}
 --- !u!1 &2017561257 stripped

@@ -9,8 +9,10 @@ public class PlayerController : MonoBehaviour
     private float powerUpStrength = 10;
     private GameObject focalPoint;
     private bool hasPowerUp = false;
+    private bool lanchesProjectiles = false;
+    private Coroutine powerupCoroutine;
     private float powerUpTime = 7;
-    private float projectileTime = 2;
+    public float projectileTime = 2;
     public GameObject powerUpIndicator;
     public GameObject projectile;
 
@@ -38,15 +40,28 @@ public class PlayerController : MonoBehaviour
 
             if (other.gameObject.name == "PowerUp(Clone)")
             {
+                NewCoroutine();
                 hasPowerUp = true;
-                StartCoroutine(PowerupCountdownRoutine());
+                powerupCoroutine = StartCoroutine(PowerupCountdownRoutine());
                 Debug.Log(other.gameObject.name);
             }
             else if (other.gameObject.name == "ProjectilePowerUp(Clone)")
             {
-                StartCoroutine(ProjectileCountdownRoutine());
+                NewCoroutine();
+                lanchesProjectiles = true;
+                powerupCoroutine = StartCoroutine(ProjectileCountdownRoutine());
                 Debug.Log(other.gameObject.name);
             }
+        }
+    }
+
+    private void NewCoroutine()
+    {
+        if (lanchesProjectiles || hasPowerUp)
+        {
+            lanchesProjectiles = false;
+            hasPowerUp = false;
+            StopCoroutine(powerupCoroutine);
         }
     }
 
@@ -65,13 +80,16 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(projectileTime);
         }
         powerUpIndicator.SetActive(false);
+        lanchesProjectiles = false;
     }
 
     void CreateProjectileWave()
     {
         for (int i = 0; i < FindObjectsOfType<Enemy>().Length; i++)
         {
-            Instantiate(projectile, transform.position, projectile.transform.rotation);
+            // Quaternion.identity == 0,0,0; we need 90,0,0 -> Quaternion.Euler(new Vector3(90,0,0)), but this messes up with the motion of projectile
+            GameObject projectileClone = Instantiate(projectile, transform.position + Vector3.up, Quaternion.identity);
+            projectileClone.GetComponent<Projectile>().SetTarget(FindObjectsOfType<Enemy>()[i].transform);
         }
     }
 
