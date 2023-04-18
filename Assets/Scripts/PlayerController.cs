@@ -8,7 +8,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody playerRb;
     private float speed = 5;
     private float powerUpStrength = 10;
-    public float jumpForce = 5;
+    public float explosionForce = 5;
+    public float jumpForce = 500;
+    public float jumpForceRadius;
     private GameObject focalPoint;
     private bool hasPowerUp = false;
     private bool launchesProjectiles = false;
@@ -16,10 +18,12 @@ public class PlayerController : MonoBehaviour
     private bool isOnGround = true;
     private Coroutine powerupCoroutine;
     private float powerUpTime = 7;
+    private float jumpTime = 2.5f;
     public float projectileTime = 2;
     public float gravityModifier;
     public GameObject powerUpIndicator;
     public GameObject projectile;
+    private float startY;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
         Physics.gravity *= gravityModifier;
+        startY = transform.position.y;
     }
 
     // Update is called once per frame
@@ -49,8 +54,10 @@ public class PlayerController : MonoBehaviour
     {
         foreach (Enemy i in FindObjectsOfType<Enemy>())
         {
-            Vector3 awayFromPlayer = i.transform.position - transform.position * 10;
-            i.GetComponent<Rigidbody>().AddForce(awayFromPlayer, ForceMode.Impulse);
+            // determine direction to push the enemy away from the player
+            //Vector3 awayFromPlayer = (i.transform.position - transform.position).normalized;
+
+            i.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, jumpForceRadius, 0.0f, ForceMode.Impulse);//AddForce(awayFromPlayer * 10, ForceMode.Impulse);
         }
     }
 
@@ -87,7 +94,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator JumpCountdownRoutine()
     {
-        yield return new WaitForSeconds(powerUpTime);
+        yield return new WaitForSeconds(jumpTime);
         canJump = false;
         powerUpIndicator.SetActive(false);
     }
@@ -134,17 +141,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy") && hasPowerUp)
+        if (collision.gameObject.CompareTag("Enemy") && hasPowerUp)
         {
             Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
             Vector3 awayFromPlayer = collision.gameObject.transform.position - transform.position;
             enemyRb.AddForce(awayFromPlayer * powerUpStrength, ForceMode.Impulse);
             Debug.Log("collided with " + collision.gameObject.name + " with poserup set to " + hasPowerUp);
         }
-        else if (collision.gameObject.CompareTag("Ground"))
+
+        //if player hit the ground or landed onto enemy
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy") && transform.position.y > startY)
         {
             if (canJump) SmashAttack();
             isOnGround = true;
+
+            
         }
     }
 }
